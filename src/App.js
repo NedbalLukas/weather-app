@@ -18,8 +18,6 @@ const WeatherApp = () => {
       window.particlesJS.load("particles-js", "/particles-config.json", () => {
         console.log("particles.js loaded");
       });
-    } else {
-      console.warn("particles.js není načtený");
     }
 
     const flashInterval = setInterval(() => {
@@ -44,8 +42,22 @@ const WeatherApp = () => {
       );
       if (!res.ok) throw new Error("Město nenalezeno");
       const data = await res.json();
-      const dailyData = data.list.filter((r) => r.dt_txt.includes("12:00:00"));
-      const slicedData = dailyData.slice(0, 5);
+
+      const todayStr = new Date().toISOString().split("T")[0];
+      const todayData = data.list.find((entry) =>
+        entry.dt_txt.startsWith(todayStr)
+      );
+
+      const dailyData = data.list.filter((r) =>
+        r.dt_txt.includes("12:00:00")
+      );
+
+      const nextDaysData = dailyData
+        .filter((d) => !d.dt_txt.startsWith(todayStr))
+        .slice(0, 4);
+
+      const slicedData = todayData ? [todayData, ...nextDaysData] : nextDaysData;
+
       setForecast(slicedData);
       localStorage.setItem("city", searchCity);
       localStorage.setItem("forecast", JSON.stringify(slicedData));

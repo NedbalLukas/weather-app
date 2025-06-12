@@ -411,3 +411,7 @@ body {
 }
 
 
+.forecast-icon,
+.today-icon {
+  filter: drop-shadow(0 0 2px #000) brightness(0.2) invert(1);
+}
